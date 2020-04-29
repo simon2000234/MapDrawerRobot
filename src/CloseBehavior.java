@@ -3,7 +3,7 @@ import lejos.robotics.subsumption.Behavior;
 
 public class CloseBehavior implements Behavior{
 	private boolean supressed;
-	boolean shouldTakeOver;
+	private boolean shouldTakeOver;
 
 
 	public CloseBehavior()

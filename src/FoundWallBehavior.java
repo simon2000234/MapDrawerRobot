@@ -13,6 +13,8 @@ public class FoundWallBehavior implements Behavior{
 	private float[] sampleLeft;
 	private float[] sampleRight;
 	private Random rnd;
+	private boolean shouldTakeOver;
+
 	
 	public FoundWallBehavior (NXTTouchSensor rightSensor, NXTTouchSensor leftSensor, MovePilot pilot)
 	{
@@ -26,6 +28,10 @@ public class FoundWallBehavior implements Behavior{
 	
 	@Override
 	public boolean takeControl() {
+		if(shouldTakeOver == true)
+		{
+			return true;
+		}
 		rightSensor.fetchSample(sampleRight, 0);
 		leftSensor.fetchSample(sampleLeft, 0);
 		System.out.println(sampleLeft[0] + " " + sampleRight[0]);
@@ -33,7 +39,7 @@ public class FoundWallBehavior implements Behavior{
 		if(foundWall)
 		{
 			System.out.println("should take over");
-			return true;
+			shouldTakeOver = true;
 		}
 		return false;
 	}
@@ -53,13 +59,14 @@ public class FoundWallBehavior implements Behavior{
 		}
 		else if(sampleRight[0] == 1)
 		{
-			turnLeft();
+			turnRight();
 		}
 		else if(sampleLeft[0] == 1)
 		{
-			turnRight();
+			turnLeft();
 		}
 		foundWall = false;
+		shouldTakeOver = false;
 	}
 
 	@Override
