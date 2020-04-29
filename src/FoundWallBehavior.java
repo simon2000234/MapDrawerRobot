@@ -20,12 +20,14 @@ public class FoundWallBehavior implements Behavior{
 		this.leftSensor = leftSensor;
 		this.pilot = pilot;
 		rnd = new Random();
+		sampleRight = new float[rightSensor.sampleSize()];
+		sampleLeft = new float[leftSensor.sampleSize()];
 	}
 	
 	@Override
 	public boolean takeControl() {
-		sampleRight = new float[rightSensor.sampleSize()];
-		sampleLeft = new float[leftSensor.sampleSize()];
+		rightSensor.fetchSample(sampleRight, 0);
+		leftSensor.fetchSample(sampleLeft, 0);
 		System.out.println(sampleLeft[0] + " " + sampleRight[0]);
 		findWallToFollow(sampleRight, sampleLeft);
 		if(foundWall)
