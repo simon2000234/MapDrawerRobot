@@ -1,3 +1,9 @@
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.Socket;
+import java.net.UnknownHostException;
+
 import lejos.hardware.ev3.EV3;
 import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
@@ -16,25 +22,36 @@ public class MainClassClass {
 
 	public static void main(String[] args) {
 		EV3 brick = LocalEV3.get();
-		try(EV3LargeRegulatedMotor leftMotor = new EV3LargeRegulatedMotor(brick.getPort("B")))
+		try
+		(
+				Socket socket = new Socket("91.101.59.42", 5000);
+				DataInputStream dis = new DataInputStream(socket.getInputStream());
+				DataOutputStream dos = new DataOutputStream(socket.getOutputStream());	
+		)
 		{
-			try(EV3LargeRegulatedMotor rightMotor = new EV3LargeRegulatedMotor(brick.getPort("C")))
+			try(EV3LargeRegulatedMotor leftMotor = new EV3LargeRegulatedMotor(brick.getPort("B")))
 			{
-				try (NXTTouchSensor rightSensor = new NXTTouchSensor(brick.getPort("S4"))) {
-					
-					try (NXTTouchSensor leftSensor = new NXTTouchSensor(brick.getPort("S1"))) {
+				try(EV3LargeRegulatedMotor rightMotor = new EV3LargeRegulatedMotor(brick.getPort("C")))
+				{
+					try (NXTTouchSensor rightSensor = new NXTTouchSensor(brick.getPort("S4"))) {
 						
-						setupPilot(leftMotor, rightMotor);
-						Behavior mb = new MoveBehavior(pilot);
-						Behavior fwb = new FoundWallBehavior(rightSensor, leftSensor, pilot);
-						Behavior cb = new CloseBehavior();
-						Behavior [] bArray = {mb, fwb, cb};
-						arby = new Arbitrator(bArray);
-						arby.go();
+						try (NXTTouchSensor leftSensor = new NXTTouchSensor(brick.getPort("S1"))) {
+							
+							setupPilot(leftMotor, rightMotor);
+							Behavior mb = new MoveBehavior(pilot);
+							Behavior fwb = new FoundWallBehavior(rightSensor, leftSensor, pilot);
+							Behavior cb = new CloseBehavior();
+							Behavior [] bArray = {mb, fwb, cb};
+							arby = new Arbitrator(bArray);
+							arby.go();
+						}
 					}
 				}
 			}
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
+		
 	}
 	
 	private static void setupPilot(EV3LargeRegulatedMotor leftMotor, EV3LargeRegulatedMotor rightMotor) {
