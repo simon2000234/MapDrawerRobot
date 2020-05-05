@@ -24,7 +24,7 @@ public class MainClassClass {
 		EV3 brick = LocalEV3.get();
 		try
 		(
-				Socket socket = new Socket("91.101.59.42", 5000);
+				Socket socket = new Socket("192.168.0.115", 5000);
 				DataInputStream dis = new DataInputStream(socket.getInputStream());
 				DataOutputStream dos = new DataOutputStream(socket.getOutputStream());	
 		)
@@ -39,7 +39,7 @@ public class MainClassClass {
 							
 							setupPilot(leftMotor, rightMotor);
 							Behavior mb = new MoveBehavior(pilot);
-							Behavior fwb = new FoundWallBehavior(rightSensor, leftSensor, pilot);
+							Behavior fwb = new FoundWallBehavior(rightSensor, leftSensor, pilot, dos);
 							Behavior cb = new CloseBehavior();
 							Behavior [] bArray = {mb, fwb, cb};
 							arby = new Arbitrator(bArray);

@@ -1,3 +1,5 @@
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.Random;
 
 import lejos.hardware.sensor.NXTTouchSensor;
@@ -14,9 +16,10 @@ public class FoundWallBehavior implements Behavior{
 	private float[] sampleRight;
 	private Random rnd;
 	private boolean shouldTakeOver;
+	private DataOutputStream dos;
 
 	
-	public FoundWallBehavior (NXTTouchSensor rightSensor, NXTTouchSensor leftSensor, MovePilot pilot)
+	public FoundWallBehavior (NXTTouchSensor rightSensor, NXTTouchSensor leftSensor, MovePilot pilot, DataOutputStream dos)
 	{
 		this.rightSensor = rightSensor;
 		this.leftSensor = leftSensor;
@@ -24,6 +27,7 @@ public class FoundWallBehavior implements Behavior{
 		rnd = new Random();
 		sampleRight = new float[rightSensor.sampleSize()];
 		sampleLeft = new float[leftSensor.sampleSize()];
+		this.dos = dos;
 	}
 	
 	@Override
@@ -46,6 +50,13 @@ public class FoundWallBehavior implements Behavior{
 
 	@Override
 	public void action() {
+			try 
+			{
+				dos.writeUTF("found wall");
+			} catch (IOException e) 
+			{
+				System.out.println(e.getMessage());
+			}
 		if(sampleRight[0] == 1 && sampleLeft[0] == 1)
 		{
 			if(rnd.nextInt(2) == 1)
@@ -78,13 +89,13 @@ public class FoundWallBehavior implements Behavior{
 	private void turnLeft()
 	{
 		pilot.travel(-5);
-		pilot.rotate(20);
+		pilot.rotate(20, false);;
 	}
 	
 	private void turnRight()
 	{
 		pilot.travel(-5);
-		pilot.rotate(-20);
+		pilot.rotate(-20, false);
 	}
 	
 	private void findWallToFollow(float[] sampleRight, float[] sampleLeft) {
