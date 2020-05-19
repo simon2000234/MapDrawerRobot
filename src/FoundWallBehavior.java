@@ -6,6 +6,7 @@ import lejos.hardware.sensor.NXTTouchSensor;
 import lejos.robotics.geometry.Point;
 import lejos.robotics.localization.PoseProvider;
 import lejos.robotics.navigation.MovePilot;
+import lejos.robotics.navigation.Pose;
 import lejos.robotics.subsumption.Behavior;
 
 public class FoundWallBehavior implements Behavior{
@@ -20,6 +21,9 @@ public class FoundWallBehavior implements Behavior{
 	private boolean shouldTakeOver;
 	private DataOutputStream dos;
 	private PoseProvider pp;
+	private boolean lastTurnLeft;
+	private boolean lastTurnRight;
+	private boolean stuckMaybe;
 
 	
 	public FoundWallBehavior (NXTTouchSensor rightSensor, NXTTouchSensor leftSensor, MovePilot pilot, DataOutputStream dos, PoseProvider pp)
@@ -32,6 +36,9 @@ public class FoundWallBehavior implements Behavior{
 		sampleLeft = new float[leftSensor.sampleSize()];
 		this.dos = dos;
 		this.pp = pp;
+		lastTurnLeft = false;
+		lastTurnRight = false;
+		stuckMaybe = false;
 	}
 	
 	@Override
@@ -74,14 +81,54 @@ public class FoundWallBehavior implements Behavior{
 		}
 		else if(sampleRight[0] == 1)
 		{
-			turnRight();
+			lastTurnRight = true;
+			if(stuckMaybe && lastTurnLeft)
+			{
+				doOneEighty();
+				stuckMaybe = false;
+			}
+			else if(lastTurnLeft)
+			{
+				stuckMaybe = true;
+				turnRight();
+			}
+			else
+			{
+				stuckMaybe = false;
+				turnRight();
+			}
+			lastTurnLeft = false;
 		}
 		else if(sampleLeft[0] == 1)
 		{
-			turnLeft();
+			lastTurnLeft = true;
+			if(stuckMaybe && lastTurnRight)
+			{
+				doOneEighty();
+				stuckMaybe = false;
+			}
+			else if(lastTurnRight)
+			{
+				stuckMaybe = true;
+				turnLeft();
+			}
+			else
+			{
+				stuckMaybe = false;
+				turnLeft();
+			}
+			lastTurnRight = false;
 		}
 		foundWall = false;
 		shouldTakeOver = false;
+	}
+
+	private void doOneEighty() {
+		Pose pose = pp.getPose();
+		pilot.travel(-5);
+		pose.moveUpdate(-5);
+		pp.setPose(pose);
+		pilot.rotate(180, false);
 	}
 
 	@Override
@@ -92,15 +139,19 @@ public class FoundWallBehavior implements Behavior{
 	
 	private void turnLeft()
 	{
-		pp.getPose().moveUpdate(-5);
+		Pose pose = pp.getPose();
 		pilot.travel(-5);
+		pose.moveUpdate(-5);
+		pp.setPose(pose);
 		pilot.rotate(40, false);;
 	}
 	
 	private void turnRight()
 	{
-		pp.getPose().moveUpdate(-5);
+		Pose pose = pp.getPose();
 		pilot.travel(-5);
+		pose.moveUpdate(-5);
+		pp.setPose(pose);
 		pilot.rotate(-40, false);
 	}
 	
