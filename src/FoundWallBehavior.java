@@ -3,6 +3,8 @@ import java.io.IOException;
 import java.util.Random;
 
 import lejos.hardware.sensor.NXTTouchSensor;
+import lejos.robotics.geometry.Point;
+import lejos.robotics.localization.PoseProvider;
 import lejos.robotics.navigation.MovePilot;
 import lejos.robotics.subsumption.Behavior;
 
@@ -17,9 +19,10 @@ public class FoundWallBehavior implements Behavior{
 	private Random rnd;
 	private boolean shouldTakeOver;
 	private DataOutputStream dos;
+	private PoseProvider pp;
 
 	
-	public FoundWallBehavior (NXTTouchSensor rightSensor, NXTTouchSensor leftSensor, MovePilot pilot, DataOutputStream dos)
+	public FoundWallBehavior (NXTTouchSensor rightSensor, NXTTouchSensor leftSensor, MovePilot pilot, DataOutputStream dos, PoseProvider pp)
 	{
 		this.rightSensor = rightSensor;
 		this.leftSensor = leftSensor;
@@ -28,6 +31,7 @@ public class FoundWallBehavior implements Behavior{
 		sampleRight = new float[rightSensor.sampleSize()];
 		sampleLeft = new float[leftSensor.sampleSize()];
 		this.dos = dos;
+		this.pp = pp;
 	}
 	
 	@Override
@@ -38,7 +42,6 @@ public class FoundWallBehavior implements Behavior{
 		}
 		rightSensor.fetchSample(sampleRight, 0);
 		leftSensor.fetchSample(sampleLeft, 0);
-		System.out.println(sampleLeft[0] + " " + sampleRight[0]);
 		findWallToFollow(sampleRight, sampleLeft);
 		if(foundWall)
 		{
@@ -52,7 +55,8 @@ public class FoundWallBehavior implements Behavior{
 	public void action() {
 			try 
 			{
-				dos.writeUTF("found wall");
+				Point location = pp.getPose().getLocation();
+				dos.writeUTF(location.getX() + "," + location.getY());
 			} catch (IOException e) 
 			{
 				System.out.println(e.getMessage());
@@ -88,14 +92,16 @@ public class FoundWallBehavior implements Behavior{
 	
 	private void turnLeft()
 	{
+		pp.getPose().moveUpdate(-5);
 		pilot.travel(-5);
-		pilot.rotate(20, false);;
+		pilot.rotate(40, false);;
 	}
 	
 	private void turnRight()
 	{
+		pp.getPose().moveUpdate(-5);
 		pilot.travel(-5);
-		pilot.rotate(-20, false);
+		pilot.rotate(-40, false);
 	}
 	
 	private void findWallToFollow(float[] sampleRight, float[] sampleLeft) {

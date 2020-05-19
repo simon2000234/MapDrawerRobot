@@ -23,6 +23,7 @@ public class MoveBehavior implements Behavior {
 		pilot.forward();
 		while(!supressed)
 		{
+			Thread.yield();
 		}
 		pilot.stop();;
 	}
