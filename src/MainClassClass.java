@@ -65,6 +65,9 @@ public class MainClassClass {
 
 		Chassis chassis = new WheeledChassis(new Wheel[] { wheel1, wheel2 }, WheeledChassis.TYPE_DIFFERENTIAL);
 		pilot = new MovePilot(chassis);
+		double speedCmPrSec = 13;
+		pilot.setLinearSpeed(speedCmPrSec);
+		pilot.setAngularSpeed(speedCmPrSec);
 	}
 
 }

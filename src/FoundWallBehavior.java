@@ -133,7 +133,7 @@ public class FoundWallBehavior implements Behavior{
 
 	@Override
 	public void suppress() {
-		// TODO Auto-generated method stub
+		// not used
 		
 	}
 	
