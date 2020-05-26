@@ -24,7 +24,7 @@ public class FoundWallBehavior implements Behavior{
 	private boolean lastTurnLeft;
 	private boolean lastTurnRight;
 	private boolean stuckMaybe;
-
+	private boolean supressed;
 	
 	public FoundWallBehavior (NXTTouchSensor rightSensor, NXTTouchSensor leftSensor, MovePilot pilot, DataOutputStream dos, PoseProvider pp)
 	{
@@ -39,6 +39,7 @@ public class FoundWallBehavior implements Behavior{
 		lastTurnLeft = false;
 		lastTurnRight = false;
 		stuckMaybe = false;
+		supressed = false;
 	}
 	
 	@Override
@@ -119,6 +120,10 @@ public class FoundWallBehavior implements Behavior{
 			}
 			lastTurnRight = false;
 		}
+		while(pilot.isMoving() && !supressed)
+		{
+			Thread.yield();
+		}
 		foundWall = false;
 		shouldTakeOver = false;
 	}
@@ -128,12 +133,12 @@ public class FoundWallBehavior implements Behavior{
 		pilot.travel(-5);
 		pose.moveUpdate(-5);
 		pp.setPose(pose);
-		pilot.rotate(180, false);
+		pilot.rotate(180, true);
 	}
 
 	@Override
 	public void suppress() {
-		// not used
+		supressed = true;
 		
 	}
 	
@@ -143,7 +148,7 @@ public class FoundWallBehavior implements Behavior{
 		pilot.travel(-5);
 		pose.moveUpdate(-5);
 		pp.setPose(pose);
-		pilot.rotate(40, false);;
+		pilot.rotate(40, true);;
 	}
 	
 	private void turnRight()
@@ -152,7 +157,7 @@ public class FoundWallBehavior implements Behavior{
 		pilot.travel(-5);
 		pose.moveUpdate(-5);
 		pp.setPose(pose);
-		pilot.rotate(-40, false);
+		pilot.rotate(-40, true);
 	}
 	
 	private void findWallToFollow(float[] sampleRight, float[] sampleLeft) {
