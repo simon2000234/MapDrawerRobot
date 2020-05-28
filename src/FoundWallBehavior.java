@@ -53,7 +53,6 @@ public class FoundWallBehavior implements Behavior{
 		findWallToFollow(sampleRight, sampleLeft);
 		if(foundWall)
 		{
-			System.out.println("should take over");
 			shouldTakeOver = true;
 		}
 		return false;
@@ -162,15 +161,12 @@ public class FoundWallBehavior implements Behavior{
 	
 	private void findWallToFollow(float[] sampleRight, float[] sampleLeft) {
 		if (sampleRight[0] == 1 && sampleLeft[0] == 1) {
-			System.out.println("found 1");
 			foundWall = true;
 		}
 		if (sampleRight[0] == 1) {
-			System.out.println("found 2");
 			foundWall = true;
 		}
 		if (sampleLeft[0] == 1) {
-			System.out.println("found 3");
 			foundWall = true;
 		}
 	}

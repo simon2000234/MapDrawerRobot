@@ -23,6 +23,7 @@ public class CloseBehavior implements Behavior{
 		}
 		if(shouldTakeOver)
 		{
+			supressed = false;
 			return true;
 		}
 		else
@@ -33,8 +34,6 @@ public class CloseBehavior implements Behavior{
 
 	@Override
 	public void action() {
-		supressed = false;
-		System.out.println("close action");
 		if(!supressed)
 		{
 			try {
