@@ -50,7 +50,7 @@ public class FoundWallBehavior implements Behavior{
 		}
 		rightSensor.fetchSample(sampleRight, 0);
 		leftSensor.fetchSample(sampleLeft, 0);
-		findWallToFollow(sampleRight, sampleLeft);
+		findWall(sampleRight, sampleLeft);
 		if(foundWall)
 		{
 			shouldTakeOver = true;
@@ -159,14 +159,8 @@ public class FoundWallBehavior implements Behavior{
 		pilot.rotate(-40, true);
 	}
 	
-	private void findWallToFollow(float[] sampleRight, float[] sampleLeft) {
-		if (sampleRight[0] == 1 && sampleLeft[0] == 1) {
-			foundWall = true;
-		}
-		if (sampleRight[0] == 1) {
-			foundWall = true;
-		}
-		if (sampleLeft[0] == 1) {
+	private void findWall(float[] sampleRight, float[] sampleLeft) {
+		if (sampleRight[0] == 1 || sampleLeft[0] == 1) {
 			foundWall = true;
 		}
 	}
